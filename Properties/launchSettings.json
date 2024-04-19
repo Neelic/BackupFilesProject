@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "BackupFilesProject": {
+      "commandName": "Project",
+      "commandLineArgs": "./conf.json",
+      "workingDirectory": "C:\\Users\\Dan\\OneDrive\\Рабочий стол\\BackupFilesProject"
+    }
+  }
+}
