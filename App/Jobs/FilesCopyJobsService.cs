@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Quartz;
-using Quartz.Impl;
-using Quartz.Logging;
+using Serilog;
 
 namespace BackupFilesProject.App.Jobs
 {
@@ -19,6 +19,12 @@ namespace BackupFilesProject.App.Jobs
                     {
                         opt.WaitForJobsToComplete = true;
                     });
+                })
+                .ConfigureLogging((hostContext, logging) =>
+                {
+                    logging
+                        .ClearProviders()
+                        .AddSerilog(Log.Logger);
                 })
                 .Build();
 

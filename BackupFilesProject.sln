@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackupFilesProject", "BackupFilesProject.csproj", "{6377AE8F-D23C-4F73-BCD5-4048E19D0D7A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{5934C0F7-979A-4BEF-90E8-EF9151799EAD}"
-	ProjectSection(SolutionItems) = preProject
-		conf.json = conf.json
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

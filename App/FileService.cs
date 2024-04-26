@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Serilog;
+using System.Text.Json;
 
 namespace BackupFilesProject.App
 {
@@ -93,6 +94,7 @@ namespace BackupFilesProject.App
         {
             if (_dirsToCopy.Count == 0 && _filesToCopy.Count == 0)
             {
+                Log.Logger.Information("No files to copy");
                 return;
             }
 
@@ -128,6 +130,7 @@ namespace BackupFilesProject.App
 
             _filesToCopy.Clear();
             _dirsToCopy.Clear();
+            Log.Logger.Information("Files copied to: " + destDirName);
         }
     }
 }
