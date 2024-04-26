@@ -2,15 +2,17 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Quartz;
-using Serilog;
 
 namespace BackupFilesProject.App.Jobs
 {
     internal class FilesCopyJobsService
     {
+        private static ILogger? _log { get; set; }
         internal static FileService? FileService { get; set; }
         public static async Task Start(ConfigParams config)
         {
+            _log = Program.LogFactory?.CreateLogger<FilesCopyJobsService>();
+
             IHost builder = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -22,9 +24,7 @@ namespace BackupFilesProject.App.Jobs
                 })
                 .ConfigureLogging((hostContext, logging) =>
                 {
-                    logging
-                        .ClearProviders()
-                        .AddSerilog(Log.Logger);
+                    logging.AddConsole();
                 })
                 .Build();
 

@@ -8,4 +8,4 @@
 
 Формат cron-выражений: <https://www.quartz-scheduler.net/documentation/quartz-3.x/how-tos/crontrigger.html#format>
 
-Для ведения логов используется Serilog
+Для ведения логов используется стандартный ILogger

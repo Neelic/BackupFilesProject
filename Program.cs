@@ -1,19 +1,22 @@
 ﻿using BackupFilesProject.App;
 using BackupFilesProject.App.Jobs;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace BackupFilesProject
 {
     internal class Program
     {
+        public static ILoggerFactory? LogFactory { get; set; }
+        private static ILogger? Log { get; set; }
         private static async Task Main(string[] args)
         {
             try
             {
-                Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .WriteTo.Console()
-                    .CreateLogger();
+                LogFactory = LoggerFactory.Create(builder =>
+                {
+                    builder.AddConsole();
+                });
+                Log = LogFactory.CreateLogger<Program>();
 
                 if (args.Length == 0)
                 {
@@ -25,11 +28,11 @@ namespace BackupFilesProject
             }
             catch (FormatException e)
             {
-                Log.Logger.Error("Invalid format of cron expression: " + e.Message);
+                Log?.LogError("Invalid format of cron expression: " + e.Message);
             }
             catch (Exception e)
             {
-                Log.Logger.Error(e.Message);
+                Log?.LogError(e.Message);
             }
         }
     }

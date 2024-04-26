@@ -1,4 +1,4 @@
-﻿using Serilog;
+﻿using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace BackupFilesProject.App
@@ -11,6 +11,7 @@ namespace BackupFilesProject.App
         private string _sourcePath = "";
         private readonly List<FileInfo> _filesToCopy = [];
         private readonly List<DirectoryInfo> _dirsToCopy = [];
+        private ILogger<FileService>? _log;
 
         public List<string> SourceList { get => [.. _source.Keys]; }
 
@@ -25,12 +26,13 @@ namespace BackupFilesProject.App
         {
             try
             {
+                _log = Program.LogFactory?.CreateLogger<FileService>();
                 FindForCopy(sourceDirName, destDirName);
                 CopyFiles(destDirName);
             }
             catch (DirectoryNotFoundException ex)
             {
-                Console.WriteLine(ex.Message);
+                _log?.LogError(ex.Message);
             }
         }
 
@@ -94,7 +96,7 @@ namespace BackupFilesProject.App
         {
             if (_dirsToCopy.Count == 0 && _filesToCopy.Count == 0)
             {
-                Log.Logger.Information("No files to copy");
+                _log?.LogInformation("No files to copy");
                 return;
             }
 
@@ -130,7 +132,7 @@ namespace BackupFilesProject.App
 
             _filesToCopy.Clear();
             _dirsToCopy.Clear();
-            Log.Logger.Information("Files copied to: " + destDirName);
+            _log?.LogInformation("Files copied to: " + destDirName);
         }
     }
 }
