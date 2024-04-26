@@ -1,5 +1,5 @@
 {
-  "SourcePath": "src",
-  "DestinationPath": "out",
-  "CronExpression": "0 0 4 * * *"
+  "SourcePath": "C:/sourceTmp",
+  "DestinationPath": "C:/sourceCopy",
+  "CronExpression": "*/10 * * * * ?"
 }

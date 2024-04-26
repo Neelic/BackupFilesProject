@@ -2,14 +2,17 @@
 
 namespace BackupFilesProject.App
 {
-    internal class FileManager
+    internal class FileService
     {
         private static readonly string FILE_TAG = "F:";
         private static readonly string DIR_TAG = "D:";
         private readonly Dictionary<string, DateTime> _source = [];
         private string _sourcePath = "";
-        private List<FileInfo> _filesToCopy = [];
-        private List<DirectoryInfo> _dirsToCopy = [];
+        private readonly List<FileInfo> _filesToCopy = [];
+        private readonly List<DirectoryInfo> _dirsToCopy = [];
+
+        public List<string> SourceList { get => [.. _source.Keys]; }
+
         public static T? ParseJson<T>(string path)
         {
             using var reader = new StreamReader(path);
@@ -17,7 +20,20 @@ namespace BackupFilesProject.App
             return JsonSerializer.Deserialize<T>(json);
         }
 
-        public void FindForCopy(string sourceDirName, string destDirName, bool copySubDirs = true, bool firstCopy = true)
+        public void StartCopyFiles(string sourceDirName, string destDirName)
+        {
+            try
+            {
+                FindForCopy(sourceDirName, destDirName);
+                CopyFiles(destDirName);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void FindForCopy(string sourceDirName, string destDirName, bool copySubDirs = true, bool firstCopy = true)
         {
             var dir = new DirectoryInfo(sourceDirName);
 
@@ -31,18 +47,8 @@ namespace BackupFilesProject.App
             if (firstCopy)
             {
                 _sourcePath = sourceDirName;
-                //string baseDirPath = Path.Combine(destDirName, "base");
-                //if (!Directory.Exists(baseDirPath))
-                //{
-                //    destDirName = baseDirPath;
-                //}
-                //else
-                //{
-                //    destDirName = Path.Combine(destDirName, "inc_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss"));
-                //}
             }
 
-            //Directory.CreateDirectory(destDirName);
             DirectoryInfo[] dirs = dir.GetDirectories();
 
             foreach (FileInfo file in dir.GetFiles())
@@ -51,13 +57,11 @@ namespace BackupFilesProject.App
                 if (!_source.ContainsKey(tempFilePath))
                 {
                     _source.Add(tempFilePath, file.LastWriteTime);
-                    //file.CopyTo(Path.Combine(destDirName, file.Name), false);
                     _filesToCopy.Add(file);
                 }
                 else if (_source[tempFilePath].CompareTo(file.LastWriteTime) < 0)
                 {
                     _source[tempFilePath] = file.LastWriteTime;
-                    //file.CopyTo(Path.Combine(destDirName, file.Name), false);
                     _filesToCopy.Add(file);
                 }
 
@@ -76,7 +80,6 @@ namespace BackupFilesProject.App
                     }
                     else if (_source[tempDirPath].CompareTo(subdir.LastWriteTime) < 0)
                     {
-                        Console.WriteLine("CHANGE DIR INFO");
                         _source[tempDirPath] = subdir.LastWriteTime;
                         _dirsToCopy.Add(subdir);
                     }
@@ -86,14 +89,13 @@ namespace BackupFilesProject.App
             }
         }
 
-        public void CopyFiles(string sourceDirName, string destDirName, bool copySubDirs = true, bool firstCopy = true)
+        private void CopyFiles(string destDirName)
         {
             if (_dirsToCopy.Count == 0 && _filesToCopy.Count == 0)
             {
                 return;
             }
 
-            //_sourcePath = sourceDirName;
             string baseDirPath = Path.Combine(destDirName, "base");
             if (!Directory.Exists(baseDirPath))
             {
@@ -114,7 +116,6 @@ namespace BackupFilesProject.App
 
             foreach (FileInfo file in _filesToCopy)
             {
-                Console.WriteLine(destDirName + file.Directory.FullName.Remove(0, _sourcePath.Length));
                 string tempDirPath = destDirName + file.Directory.FullName.Remove(0, _sourcePath.Length);
                 if (!Directory.Exists(tempDirPath))
                 {

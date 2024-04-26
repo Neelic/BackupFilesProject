@@ -1,7 +1,5 @@
 ﻿using BackupFilesProject.App;
 using BackupFilesProject.App.Jobs;
-using Cronos;
-using Quartz;
 using Quartz.Logging;
 
 namespace BackupFilesProject
@@ -10,23 +8,22 @@ namespace BackupFilesProject
     {
         private static async Task Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                Console.WriteLine("Exceprion: No arguments!");
-                Environment.Exit(0);
-            }
-
             try
             {
-                LogProvider.SetCurrentLogProvider(new ConsoleLogProvider());
-                ConfigParams? configs = FileManager.ParseJson<ConfigParams>(args[0]);
-                Console.WriteLine(configs?.ToString());
-                await FilesCopyController.Start();
+                if (args.Length == 0)
+                {
+                    throw new ArgumentException("No arguments!");
+                }
 
-                Console.WriteLine("Press any key to close the application");
-                Console.ReadKey();
+                LogProvider.SetCurrentLogProvider(new ConsoleLogProvider());
+                ConfigParams? configs = FileService.ParseJson<ConfigParams>(args[0]);
+                await FilesCopyJobsService.Start(configs);
             }
-            catch (FileNotFoundException e)
+            catch (FormatException e)
+            {
+                Console.WriteLine("Exception: Invalid cron expression: " + e.Message);
+            }
+            catch (Exception e)
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
